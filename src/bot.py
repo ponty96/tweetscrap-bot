@@ -11,11 +11,11 @@ from pubsub import pub
 
 
 class Bot(object):
-    def __init__(self,token):
+
+    def __init__(self, token):
         self.last_ping = 0
         self.token = token
         self.slack_client = None
-        self.replies = {}
         self.pub = pub
 
     def connect(self):
@@ -32,17 +32,18 @@ class Bot(object):
                 # which is the type of the payload and the payload itself
                 # any listener gets updated and can perform any action based on the payload
                 for payload in self.slack_client.rtm_read():
-                    sef.dispatchMessage(payload['type'],payload=payload)
                     print(payload)
+                    self.dispatchMessage(payload['type'],payload)
+
                 time.sleep(.3)
         else:
             # should throw an exception here
             print("Connection closed")
 
     # register a callback to listen to changes
-    def registerListener(self,callback,obj_type):
-        self.pub.subscribe(callback,obj_type)
+    def registerListener(self, callback, obj_type):
+        self.pub.subscribe(callback, obj_type)
 
     # dispatches changes
-    def dispatchMessage(self,obj_type,payload):
-        self.pub.sendMessage(obj_type,payload)
+    def dispatchMessage(self, obj_type, payload):
+        self.pub.sendMessage(obj_type, payload=payload)
