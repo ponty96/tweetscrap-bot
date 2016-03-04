@@ -1,3 +1,3 @@
 
 def splitText(text):
-    return text.split(" ")
+    return text.split()

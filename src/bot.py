@@ -55,3 +55,7 @@ class Bot(object):
         channel = msg_dict['channel']
         msg = msg_dict['message']
         self.slack.chat.post_message(channel=channel, text=msg, username=self.bot_user)
+
+
+    def listenForMsg(self, payload):
+        print(" i just got a message from tweeter")

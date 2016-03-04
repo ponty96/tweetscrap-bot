@@ -1,6 +1,7 @@
 
 import tweepy
 from .scrapper import splitText
+from pubsub import pub
 
 
 class Twitter(object):
@@ -11,20 +12,20 @@ class Twitter(object):
         self.access_token = access_token
         self.access_token_secret = access_token_secret
         self.twitterApi = None
+        self.pub = pub
 
     def auth(self):
         auth =  tweepy.OAuthHandler(self.consumer_key,self.consumer_secret)
         self.twitterApi = tweepy.API(auth)
 
+
     def search_for_hash_tag(self, msg_dict):
         hashtag = msg_dict['hashtag']
         start_date = msg_dict['from']
         end_date =  msg_dict['end_date']
-        return "i have not gone to twitter yet but will soon thou"
+        self.dispatchMessage("tweet","i have not gone to twitter yet but will soon thou")
 
     def listenForMsg(self, payload):
-        print("payload gotten")
-        print(payload)
 
         channel = payload['channel']
         words = splitText(payload['text'])
@@ -32,12 +33,21 @@ class Twitter(object):
 
 
     def handleMessage(self, words, channel):
-        print("i was allowed to handle text")
         for word in words:
             # do something with each word here
             # match regex here to get the scrap, hashtag, from_date, last_date
+            print(word)
             msg_dict = {}
             msg_dict['hashtag'] = "#dude";
             msg_dict['from'] = ""
             msg_dict['end_date'] = ""
             self.search_for_hash_tag(msg_dict=msg_dict)
+
+
+    # register a callback to listen to changes
+    def registerListener(self, callback, obj_type):
+       self.pub.subscribe(callback, obj_type)
+
+    # dispatches changes
+    def dispatchMessage(self, obj_type, payload):
+       self.pub.sendMessage(obj_type, payload=payload)
