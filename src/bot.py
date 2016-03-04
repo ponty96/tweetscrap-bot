@@ -5,6 +5,7 @@ import os
 import sys
 import logging
 from slackclient import SlackClient
+from slacker import Slacker
 from pubsub import pub
 
 
@@ -12,11 +13,13 @@ from pubsub import pub
 
 class Bot(object):
 
-    def __init__(self, token):
+    def __init__(self, token, bot_user):
         self.last_ping = 0
         self.token = token
         self.slack_client = None
         self.pub = pub
+        self.slack = Slacker(token)
+        self.bot_user = bot_user
 
     def connect(self):
         self.slack_client = SlackClient(self.token)
@@ -47,3 +50,8 @@ class Bot(object):
     # dispatches changes
     def dispatchMessage(self, obj_type, payload):
         self.pub.sendMessage(obj_type, payload=payload)
+
+    def sendChannelMsg(self, msg_dict):
+        channel = msg_dict['channel']
+        msg = msg_dict['message']
+        self.slack.chat.post_message(channel=channel, text=msg, username=self.bot_user)

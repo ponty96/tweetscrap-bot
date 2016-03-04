@@ -4,19 +4,21 @@ import os
 
 # lets get all our details like the bot token
 # the token
-
-token = os.environ.get('TOKEN_ID');
+from config import *
 
 from src.bot import Bot
+from src.tweeter import Twitter
 
-myBot = Bot(token)
 
 
-def testListener(payload):
-    print("Listening")
-    print(payload)
+myBot = Bot(SLACK_TOKEN_ID, bot_user="@tweetscrap")
 
-myBot.registerListener(testListener,'message')
+twitter = Twitter(consumer_key=CONSUMER_KEY, consumer_secret=CONSUMER_SECRET,
+                  access_token=ACCESS_TOKEN, access_token_secret=ACCESS_TOKEN_SECRET)
+
+
+
+myBot.registerListener(twitter.listenForMsg,'message')
 
 if __name__ == "__main__":
     myBot.run()
