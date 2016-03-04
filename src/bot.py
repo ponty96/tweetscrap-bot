@@ -36,9 +36,12 @@ class Bot(object):
                 # any listener gets updated and can perform any action based on the payload
                 for payload in self.slack_client.rtm_read():
                     print(payload)
-                    self.dispatchMessage(payload['type'],payload)
+                    if 'subtype' in payload:
+                        print('we got a msg from a bot please lets see if we wanna handle bot-bot convo')
+                    else:
+                        self.dispatchMessage(payload['type'],payload)
 
-                time.sleep(.3)
+                time.sleep(1)
         else:
             # should throw an exception here
             print("Connection closed")
@@ -53,9 +56,10 @@ class Bot(object):
 
     def sendChannelMsg(self, msg_dict):
         channel = msg_dict['channel']
-        msg = msg_dict['message']
+        msg = msg_dict['text']
         self.slack.chat.post_message(channel=channel, text=msg, username=self.bot_user)
 
 
     def listenForMsg(self, payload):
-        print(" i just got a message from tweeter")
+        print("just got a message")
+        self.sendChannelMsg(payload)
