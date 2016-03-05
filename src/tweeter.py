@@ -2,7 +2,9 @@
 import tweepy
 from .scrapper import splitText
 from pubsub import pub
+import json
 
+keywords = ['scrap','from', 'end']
 
 class Twitter(object):
 
@@ -13,23 +15,18 @@ class Twitter(object):
         self.access_token_secret = access_token_secret
         self.twitterApi = None
         self.pub = pub
+        self.keyParamArray = []
 
     def auth(self):
         auth =  tweepy.OAuthHandler(self.consumer_key,self.consumer_secret)
         self.twitterApi = tweepy.API(auth)
 
 
-    def search_for_hash_tag(self, msg_dict, channel):
-        print('called search')
-        hashtag = msg_dict['hashtag']
-        start_date = msg_dict['from']
-        end_date =  msg_dict['end_date']
+    def search_for_hash_tag(self, channel):
         # search from twitter
-
-
         payload = {}
         payload['channel'] = channel
-        payload['text'] = "i have not gone to twitter yet but will soon thou"
+        payload['text'] = json.dumps(self.keyParamArray)
         self.dispatchMessage("tweet",payload)
 
     def listenForMsg(self, payload):
@@ -41,15 +38,16 @@ class Twitter(object):
 
     def handleMessage(self, words, channel):
         msg_dict = {}
-        for word in words:
+        for i, word in enumerate(words):
             # do something with each word here
             # match regex here to get the scrap, hashtag, from_date, last_date
-            print(word)
-            msg_dict['hashtag'] = "#dude";
-            msg_dict['from'] = ""
-            msg_dict['end_date'] = ""
+            if word in keywords:
+                keyParamMap = {}
+                keyParamMap['keyword'] = word
+                keyParamMap['action'] = words[int(i+1)]
+                self.keyParamArray.append(keyParamMap)
 
-        self.search_for_hash_tag(msg_dict=msg_dict, channel=channel)
+        self.search_for_hash_tag(channel=channel)
 
 
     # register a callback to listen to changes
