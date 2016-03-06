@@ -18,13 +18,13 @@ class Twitter(object):
         self.keyParamArray = []
 
     def auth(self):
-        auth =  tweepy.OAuthHandler(self.consumer_key,self.consumer_secret)
+        auth =  tweepy.OAuthHandler(self.consumer_key, self.consumer_secret)
         self.twitterApi = tweepy.API(auth)
 
 
     def queryBuilder(self):
         response = []
-        for tweet in tweepy.Cursor(self.twitterApi.search,q=self.keyParamArray[0]['action']).items(10):
+        for tweet in tweepy.Cursor(self.twitterApi.search, q=self.keyParamArray[0]['action']).items(10):
             json_obj = json.dumps(tweet._json)
             response.append(json_obj)
 
@@ -36,7 +36,7 @@ class Twitter(object):
         payload = {}
         payload['channel'] = channel
         payload['text'] = self.queryBuilder()
-        self.dispatchMessage("tweet",payload)
+        self.dispatchMessage("tweet", andpayload)
 
     def listenForMsg(self, payload):
 
@@ -47,6 +47,7 @@ class Twitter(object):
 
     def handleMessage(self, words, channel):
         msg_dict = {}
+        self.keyParamArray[:] = [] # empty the array so as to have only latest messasge sent
         for i, word in enumerate(words):
             # do something with each word here
             # match regex here to get the scrap, hashtag, from_date, last_date
