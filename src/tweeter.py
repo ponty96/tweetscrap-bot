@@ -22,11 +22,20 @@ class Twitter(object):
         self.twitterApi = tweepy.API(auth)
 
 
+    def queryBuilder(self):
+        response = []
+        for tweet in tweepy.Cursor(self.twitterApi.search,q=self.keyParamArray[0]['action']).items(10):
+            json_obj = json.dumps(tweet._json)
+            response.append(json_obj)
+
+        print(response)
+        return response
+
     def search_for_hash_tag(self, channel):
         # search from twitter
         payload = {}
         payload['channel'] = channel
-        payload['text'] = json.dumps(self.keyParamArray)
+        payload['text'] = self.queryBuilder()
         self.dispatchMessage("tweet",payload)
 
     def listenForMsg(self, payload):
