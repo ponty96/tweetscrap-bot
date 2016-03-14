@@ -33,5 +33,5 @@ This project is a slack bot that allows users to request for tweets around twitt
 
  ********
 
-Example can be found [HERE](https://www.youtube.com/watch?v=5onztTb5dCQ)
+Example video can be found [HERE](https://www.youtube.com/watch?v=5onztTb5dCQ) on youtube
 #### Still a work in progress and the readme will be updated soon
