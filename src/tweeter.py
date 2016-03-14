@@ -37,7 +37,7 @@ class Twitter(object):
              
         message['fields'].append({'title':text})
         message['fields'].append({
-                    "created_at": "Tweeted At",
+                    "title": "Tweeted At",
                     "value": str(tweet.created_at.now().strftime("%A, %d. %B %Y %I:%M%p")),
                     "short": False
                 })
