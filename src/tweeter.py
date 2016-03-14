@@ -43,19 +43,10 @@ class Twitter(object):
                 })
         mainMsg.append(message)
         return json.dumps(mainMsg)
-        
-    def getHashtags(self, tweet):
-         hashs = []
-         for hash in tweet.entities['hashtags']:
-             hashs.append({'text':hash['text']})
-             # hashs = ''.join([hashs,"#" + hash['text']])
-         return json.dumps(hashs)
-
 
     def queryBuilder(self, channel):
-        for tweet in tweepy.Cursor(self.twitterApi.search, q=self.keyParamArray[0]['action'], count=1).items(1):
+        for tweet in tweepy.Cursor(self.twitterApi.search, q=self.keyParamArray[0]['action'], count=15).items(15):
             
-            text = tweet.text
             attach = self.buildMessageTemplate(tweet)
             
             payload = {}
@@ -63,14 +54,7 @@ class Twitter(object):
             payload['text'] = ""
             payload['attachments'] = attach
             self.dispatchMessage("tweet", payload) 
-            
-
-    def search_for_hash_tag(self, channel):
-        # search from twitter
-        payload = {}
-        payload['channel'] = channel
-        payload['text'] = self.queryBuilder()
-        self.dispatchMessage("tweet", payload)
+           
 
     def listenForMsg(self, payload):
 
