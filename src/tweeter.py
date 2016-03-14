@@ -3,8 +3,10 @@ import tweepy
 from .scrapper import splitText
 from pubsub import pub
 import json
-
+import pprint
 keywords = ['scrap','from', 'end']
+
+pp = pprint.PrettyPrinter(indent=4)
 
 class Twitter(object):
 
@@ -22,21 +24,30 @@ class Twitter(object):
         self.twitterApi = tweepy.API(auth)
 
 
-    def queryBuilder(self):
-        response = []
-        for tweet in tweepy.Cursor(self.twitterApi.search, q=self.keyParamArray[0]['action']).items(10):
-            json_obj = json.dumps(tweet._json)
-            response.append(json_obj)
+    def buildMessageTemplate(self,tweet):
+        print("----------- this is a new tweet ---------------")
+        print("\n")
+        pp.pprint(tweet)
+        print("\n")
+        print("----------- this is the end of a tweet ---------------")
+        return tweet.text
 
-        print(response)
-        return response
+
+    def queryBuilder(self, channel):
+        for tweet in tweepy.Cursor(self.twitterApi.search, q=self.keyParamArray[0]['action'], count=30).items(30):
+            json_obj = self.buildMessageTemplate(tweet)
+            payload = {}
+            payload['channel'] = channel
+            payload['text'] = json_obj
+            self.dispatchMessage("tweet", payload) 
+            
 
     def search_for_hash_tag(self, channel):
         # search from twitter
         payload = {}
         payload['channel'] = channel
         payload['text'] = self.queryBuilder()
-        self.dispatchMessage("tweet", andpayload)
+        self.dispatchMessage("tweet", payload)
 
     def listenForMsg(self, payload):
 
@@ -57,7 +68,7 @@ class Twitter(object):
                 keyParamMap['action'] = words[int(i+1)]
                 self.keyParamArray.append(keyParamMap)
 
-        self.search_for_hash_tag(channel=channel)
+        self.queryBuilder(channel=channel)
 
 
     # register a callback to listen to changes
