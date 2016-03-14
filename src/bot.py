@@ -57,7 +57,9 @@ class Bot(object):
     def sendChannelMsg(self, msg_dict):
         channel = msg_dict['channel']
         msg = msg_dict['text']
-        self.slack.chat.post_message(channel=channel, text=msg, username=self.bot_user)
+        attachments = msg_dict['attachments']
+        self.slack.chat.post_message(channel=channel, text=msg, username=self.bot_user, 
+                                        attachments=attachments, icon_url="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSzEdaAJwSCfB5K5F6FrASKwAk7ukLdWkWddVuy0ew3_iDqcU_0")
 
 
     def listenForMsg(self, payload):

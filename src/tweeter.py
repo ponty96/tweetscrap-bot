@@ -25,28 +25,43 @@ class Twitter(object):
 
 
     def buildMessageTemplate(self,tweet):
-        print("----------- this is a new tweet ---------------")
-        print("\n")
-        pp.pprint(tweet)
-        print("\n")
-        print("----------- this is the end of a tweet ---------------")
-        msg = tweet.text + "\n" + self.getHashtags(tweet.entities) 
-        return tweet.text
+        mainMsg = []
+        message = {'color':'#0084B4',
+                    'author_name':"by: " + tweet.user.screen_name,
+                    'author_icon':tweet.user.profile_image_url,
+                    'pretext':tweet.text}
+        message['fields'] = []
+        text = ""
+        for hash in tweet.entities['hashtags']:
+             text = ''.join([text," #", hash['text']])
+             
+        message['fields'].append({'title':text})
+        message['fields'].append({
+                    "created_at": "Tweeted At",
+                    "value": str(tweet.created_at.now().strftime("%A, %d. %B %Y %I:%M%p")),
+                    "short": False
+                })
+        mainMsg.append(message)
+        return json.dumps(mainMsg)
         
-    def getHashtags(self, hashtags):
-         hashs = ""
-         for hash in hashtags:
-             hashs = hashs+hash.text
-         
-         return hashs
+    def getHashtags(self, tweet):
+         hashs = []
+         for hash in tweet.entities['hashtags']:
+             hashs.append({'text':hash['text']})
+             # hashs = ''.join([hashs,"#" + hash['text']])
+         return json.dumps(hashs)
 
 
     def queryBuilder(self, channel):
-        for tweet in tweepy.Cursor(self.twitterApi.search, q=self.keyParamArray[0]['action'], count=3).items(30):
-            json_obj = self.buildMessageTemplate(tweet)
+        for tweet in tweepy.Cursor(self.twitterApi.search, q=self.keyParamArray[0]['action'], count=1).items(1):
+            
+            text = tweet.text
+            attach = self.buildMessageTemplate(tweet)
+            
             payload = {}
             payload['channel'] = channel
-            payload['text'] = json_obj
+            payload['text'] = ""
+            payload['attachments'] = attach
             self.dispatchMessage("tweet", payload) 
             
 
