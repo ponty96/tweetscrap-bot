@@ -30,11 +30,19 @@ class Twitter(object):
         pp.pprint(tweet)
         print("\n")
         print("----------- this is the end of a tweet ---------------")
+        msg = tweet.text + "\n" + self.getHashtags(tweet.entities) 
         return tweet.text
+        
+    def getHashtags(self, hashtags):
+         hashs = ""
+         for hash in hashtags:
+             hashs = hashs+hash.text
+         
+         return hashs
 
 
     def queryBuilder(self, channel):
-        for tweet in tweepy.Cursor(self.twitterApi.search, q=self.keyParamArray[0]['action'], count=30).items(30):
+        for tweet in tweepy.Cursor(self.twitterApi.search, q=self.keyParamArray[0]['action'], count=3).items(30):
             json_obj = self.buildMessageTemplate(tweet)
             payload = {}
             payload['channel'] = channel
